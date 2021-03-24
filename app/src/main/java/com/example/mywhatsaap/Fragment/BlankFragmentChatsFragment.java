@@ -34,41 +34,57 @@ public class BlankFragmentChatsFragment extends Fragment {
     ArrayList<User>list=new ArrayList<>();
     FirebaseDatabase database;
     FirebaseAuth auth;
+    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding=FragmentBlankChatsBinding.inflate(inflater,container,false);
-        UserAdapter adapter=new UserAdapter(list ,getContext());
-        LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
-        binding.chatRecyer.setLayoutManager(layoutManager);
-        auth = FirebaseAuth.getInstance();
-        database=FirebaseDatabase.getInstance();
-        getUser();
+        View view = inflater.inflate(inflater,container,false);
+        recyclerView=view.findViewById(R.id.chatRecyer);
+       recyclerView= findViewById(R.id.recycleTranction);
+        recyclerView.setLayoutManager(new LinearLayoutManager(TransctionActivity.this));
+        adapter = new adapter(getContext(), tests);
+        recyclerView.setAdapter(adapter);
+        //getUser();
 
-        database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
+        database.getReference().child("user").addListenerForSingleValueEvent(new ValueEventListener() {
+
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
                 list.clear();
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    User user=dataSnapshot.getValue(User.class);
-                   user.getUserId(dataSnapshot.getKey());
-                    list.add(user);
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User t = new User();
+                   
+                    Log.e("The read success: ", "suooo" + tests.size());
+                    t.setUserName(snapshot.child("userName").getValue().toString());
+
+                    tests.add(t);
+
                 }
-                adapter.notifyDataSetChanged();
+               
+               adapter.notifyDataSetChanged();
+               
+                Log.e("The read success: ", "su" + tests.size());
+
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                avLoadingIndicatorView.setVisibility(View.GONE);
+                avLoadingIndicatorView.hide();
+                Log.e("The read failed: ", databaseError.getMessage());
+
 
             }
         });
 
-
-        return binding.getRoot();
+        return view;
     }
 
-    private void getUser() {
-        list.add(new User("11","suresh","ghuggg"));
-    }
+   
 }
