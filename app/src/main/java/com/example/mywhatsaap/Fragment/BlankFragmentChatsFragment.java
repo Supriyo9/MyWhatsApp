@@ -42,8 +42,8 @@ public class BlankFragmentChatsFragment extends Fragment {
         View view = inflater.inflate(inflater,container,false);
         recyclerView=view.findViewById(R.id.chatRecyer);
        recyclerView= findViewById(R.id.recycleTranction);
-        recyclerView.setLayoutManager(new LinearLayoutManager(TransctionActivity.this));
-        adapter = new adapter(getContext(), tests);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext));
+        UserAdapter adapter = new UserAdapter(getContext(), list);
         recyclerView.setAdapter(adapter);
         //getUser();
 
@@ -59,26 +59,23 @@ public class BlankFragmentChatsFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User t = new User();
                    
-                    Log.e("The read success: ", "suooo" + tests.size());
+                    Log.e("The read success: ", "suooo" + list.size());
                     t.setUserName(snapshot.child("userName").getValue().toString());
 
-                    tests.add(t);
+                    list.add(t);
 
                 }
                
                adapter.notifyDataSetChanged();
                
-                Log.e("The read success: ", "su" + tests.size());
+                Log.e("The read success: ", "su" + list.size());
 
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                avLoadingIndicatorView.setVisibility(View.GONE);
-                avLoadingIndicatorView.hide();
-                Log.e("The read failed: ", databaseError.getMessage());
-
+               
 
             }
         });
